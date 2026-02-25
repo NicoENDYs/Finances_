@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import pkg from '@prisma/client';
+const { PrismaClient } = pkg;
 import fp from 'fastify-plugin';
 
 const prisma = new PrismaClient();

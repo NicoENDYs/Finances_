@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -29,8 +29,8 @@ model Account {
   name        String
   type        String    // checking, savings, credit, 401k, ira, brokerage, crypto
   institution String
-  balance     Decimal   @default(0) @db.Decimal(12, 2)
-  currency    String    @default("USD")
+  balance     Decimal   @default(0)
+  currency    String    @default("COP")
   isActive    Boolean   @default(true) @map("is_active")
   color       String    @default("#06d6a0")
   icon        String    @default("fa-university")
@@ -60,7 +60,7 @@ model Transaction {
   id          Int       @id @default(autoincrement())
   accountId   Int       @map("account_id")
   categoryId  Int       @map("category_id")
-  amount      Decimal   @db.Decimal(12, 2)
+  amount      Decimal
   type        String    // income, expense, transfer
   merchant    String
   description String?
@@ -79,7 +79,7 @@ model Budget {
   id         Int      @id @default(autoincrement())
   userId     Int      @map("user_id")
   categoryId Int      @map("category_id")
-  amount     Decimal  @db.Decimal(12, 2)
+  amount     Decimal
   period     String   @default("monthly") // monthly, weekly
   createdAt  DateTime @default(now()) @map("created_at")
 
@@ -94,8 +94,8 @@ model Goal {
   id            Int       @id @default(autoincrement())
   userId        Int       @map("user_id")
   name          String
-  targetAmount  Decimal   @map("target_amount") @db.Decimal(12, 2)
-  currentAmount Decimal   @default(0) @map("current_amount") @db.Decimal(12, 2)
+  targetAmount  Decimal   @map("target_amount")
+  currentAmount Decimal   @default(0) @map("current_amount")
   deadline      DateTime?
   color         String    @default("#06d6a0")
   createdAt     DateTime  @default(now()) @map("created_at")

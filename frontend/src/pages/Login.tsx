@@ -4,8 +4,8 @@ import { useAuthStore } from '../store/authStore';
 import './Login.css';
 
 export default function Login() {
-    const [email, setEmail] = useState('nicolas@aurora.app');
-    const [password, setPassword] = useState('aurora123');
+    const [email, setEmail] = useState('nico@gmail.com');
+    const [password, setPassword] = useState('Nicolas$12');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuthStore();
@@ -44,7 +44,7 @@ export default function Login() {
                         {loading ? 'Entrando...' : 'Iniciar Sesión'}
                     </button>
                 </form>
-                <p className="login-hint text-muted">Demo: nicolas@aurora.app / aurora123</p>
+                <p className="login-hint text-muted">Demo: nico@gmail.com / Nicolas$12</p>
             </div>
         </div>
     );

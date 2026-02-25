@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { transactionsApi } from '../api';
+import { transactionsApi, accountsApi } from '../api';
 import { useConfirm } from '../components/ui/ConfirmDialog';
 import { useToast } from '../components/ui/Toast';
 import './Transactions.css';
@@ -16,6 +16,13 @@ export default function Transactions() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
+    const [showForm, setShowForm] = useState(false);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [accounts, setAccounts] = useState<any[]>([]);
+    const [saving, setSaving] = useState(false);
+    const today = new Date().toISOString().split('T')[0];
+    const [form, setForm] = useState({ accountId: '', categoryId: '', merchant: '', amount: 0, type: 'expense', date: today });
+
     const confirm = useConfirm();
     const toast = useToast();
 
@@ -32,7 +39,20 @@ export default function Transactions() {
         finally { setLoading(false); }
     };
 
-    useEffect(() => { fetchTx(); }, [typeFilter]);
+    const fetchDropdownData = async () => {
+        try {
+            const [catRes, accRes] = await Promise.all([transactionsApi.categories(), accountsApi.list()]);
+            setCategories(catRes.data.categories);
+            setAccounts(accRes.data.accounts);
+            if (accRes.data.accounts.length && !form.accountId) setForm(prev => ({ ...prev, accountId: accRes.data.accounts[0].id.toString() }));
+            if (catRes.data.categories.length && !form.categoryId) setForm(prev => ({ ...prev, categoryId: catRes.data.categories[0].id.toString() }));
+        } catch (err) { console.error(err); }
+    };
+
+    useEffect(() => {
+        fetchTx();
+        fetchDropdownData();
+    }, [typeFilter]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -54,6 +74,30 @@ export default function Transactions() {
         } catch { toast('Error al eliminar', 'error'); }
     };
 
+    const handleCreate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            const dateISO = new Date(form.date).toISOString();
+            await transactionsApi.create({
+                accountId: Number(form.accountId),
+                categoryId: Number(form.categoryId),
+                amount: Number(form.amount),
+                type: form.type,
+                merchant: form.merchant,
+                date: dateISO,
+            });
+            setShowForm(false);
+            setForm(prev => ({ ...prev, merchant: '', amount: 0, date: today }));
+            fetchTx();
+            toast('Transacción creada exitosamente');
+        } catch (err) {
+            toast('Error al crear transacción', 'error');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
     const totalExpense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
 
@@ -64,7 +108,60 @@ export default function Transactions() {
                     <h1>Transacciones</h1>
                     <p className="text-muted">{total} transacciones encontradas</p>
                 </div>
+                <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+                    <i className={`fas ${showForm ? 'fa-times' : 'fa-plus'}`} /> {showForm ? 'Cancelar' : 'Nueva'}
+                </button>
             </div>
+
+            {showForm && (
+                <div className="card form-card fade-up" style={{ marginBottom: 20 }}>
+                    <h3><i className="fas fa-receipt text-accent" /> Registrar Transacción</h3>
+                    <form onSubmit={handleCreate} className="sub-form">
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Tipo de movimiento</label>
+                                <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
+                                    <option value="expense">Gasto</option>
+                                    <option value="income">Ingreso</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Cuenta</label>
+                                <select value={form.accountId} onChange={e => setForm({ ...form, accountId: e.target.value })} required>
+                                    <option value="">Selecciona una cuenta</option>
+                                    {accounts.map(acc => <option key={acc.id} value={acc.id}>{acc.name} ({acc.currency})</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Comercio o Motivo</label>
+                                <input value={form.merchant} onChange={e => setForm({ ...form, merchant: e.target.value })} placeholder="Ej: Supermercado, Nómina..." required />
+                            </div>
+                            <div className="form-group">
+                                <label>Monto (COP)</label>
+                                <input type="number" min="1" value={form.amount} onChange={e => setForm({ ...form, amount: Number(e.target.value) })} required />
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Categoría</label>
+                                <select value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })} required>
+                                    <option value="">Selecciona categoría</option>
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Fecha</label>
+                                <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} required />
+                            </div>
+                        </div>
+                        <button type="submit" className="btn-primary" disabled={saving}>
+                            {saving ? 'Guardando...' : 'Guardar Transacción'}
+                        </button>
+                    </form>
+                </div>
+            )}
 
             <div className="tx-summary-row">
                 <div className="card summary-card">

@@ -16,9 +16,9 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  accounts Account[]
-  budgets  Budget[]
-  goals    Goal[]
+  accounts      Account[]
+  subscriptions Subscription[]
+  goals         Goal[]
 
   @@map("users")
 }
@@ -51,7 +51,6 @@ model Category {
   isDefault Boolean   @default(true) @map("is_default")
 
   transactions Transaction[]
-  budgets      Budget[]
 
   @@map("categories")
 }
@@ -75,19 +74,21 @@ model Transaction {
   @@map("transactions")
 }
 
-model Budget {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @map("user_id")
-  categoryId Int      @map("category_id")
-  amount     Decimal
-  period     String   @default("monthly") // monthly, weekly
-  createdAt  DateTime @default(now()) @map("created_at")
+model Subscription {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @map("user_id")
+  name            String
+  amount          Decimal
+  period          String   @default("monthly") // monthly, yearly
+  nextBillingDate DateTime @map("next_billing_date")
+  isActive        Boolean  @default(true) @map("is_active")
+  color           String   @default("#f59e0b")
+  icon            String   @default("fa-sync")
+  createdAt       DateTime @default(now()) @map("created_at")
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, categoryId, period])
-  @@map("budgets")
+  @@map("subscriptions")
 }
 
 model Goal {

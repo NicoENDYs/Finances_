@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Accounts from './pages/Accounts';
 import Transactions from './pages/Transactions';
-import Budgets from './pages/Budgets';
+import Subscriptions from './pages/Subscriptions';
 import Goals from './pages/Goals';
 import Investments from './pages/Investments';
 import './index.css';
@@ -36,7 +36,7 @@ export default function App() {
               <Route index element={<Dashboard />} />
               <Route path="accounts" element={<Accounts />} />
               <Route path="transactions" element={<Transactions />} />
-              <Route path="budgets" element={<Budgets />} />
+              <Route path="subscriptions" element={<Subscriptions />} />
               <Route path="goals" element={<Goals />} />
               <Route path="investments" element={<Investments />} />
             </Route>

@@ -6,7 +6,7 @@ const navItems = [
     { to: '/', icon: 'fas fa-th-large', label: 'Dashboard' },
     { to: '/accounts', icon: 'fas fa-wallet', label: 'Cuentas' },
     { to: '/transactions', icon: 'fas fa-exchange-alt', label: 'Transacciones' },
-    { to: '/budgets', icon: 'fas fa-chart-pie', label: 'Presupuestos' },
+    { to: '/subscriptions', icon: 'fas fa-sync', label: 'Suscripciones' },
     { to: '/goals', icon: 'fas fa-bullseye', label: 'Metas' },
     { to: '/investments', icon: 'fas fa-chart-line', label: 'Inversiones' },
 ];

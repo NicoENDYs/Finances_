@@ -20,6 +20,7 @@ export const accountsApi = {
 
 export const transactionsApi = {
     list: (params?: Record<string, string>) => client.get('/transactions', { params }),
+    categories: () => client.get('/transactions/categories'),
     create: (data: any) => client.post('/transactions', data),
     remove: (id: number) => client.delete(`/transactions/${id}`),
 };
@@ -32,11 +33,11 @@ export const analyticsApi = {
         client.get('/analytics/monthly', { params: { year, month } }),
 };
 
-export const budgetsApi = {
-    list: () => client.get('/budgets'),
-    create: (data: any) => client.post('/budgets', data),
-    update: (id: number, data: any) => client.put(`/budgets/${id}`, data),
-    remove: (id: number) => client.delete(`/budgets/${id}`),
+export const subscriptionsApi = {
+    list: () => client.get('/subscriptions'),
+    create: (data: any) => client.post('/subscriptions', data),
+    update: (id: number, data: any) => client.put(`/subscriptions/${id}`, data),
+    remove: (id: number) => client.delete(`/subscriptions/${id}`),
 };
 
 export const goalsApi = {

@@ -10,7 +10,7 @@ import accountsRoutes from './routes/accounts.routes.js';
 import transactionsRoutes from './routes/transactions.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import aiRoutes from './routes/ai.routes.js';
-import budgetRoutes from './routes/budgets.routes.js';
+import subscriptionsRoutes from './routes/subscriptions.routes.js';
 import goalRoutes from './routes/goals.routes.js';
 
 const fastify = Fastify({
@@ -40,7 +40,7 @@ await fastify.register(accountsRoutes, { prefix: '/api/accounts' });
 await fastify.register(transactionsRoutes, { prefix: '/api/transactions' });
 await fastify.register(analyticsRoutes, { prefix: '/api/analytics' });
 await fastify.register(aiRoutes, { prefix: '/api/ai' });
-await fastify.register(budgetRoutes);
+await fastify.register(subscriptionsRoutes, { prefix: '/api/subscriptions' });
 await fastify.register(goalRoutes);
 
 // Health check

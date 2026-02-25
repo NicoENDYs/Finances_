@@ -10,6 +10,13 @@ export async function create(request, reply) {
     reply.status(201).send({ transaction: tx });
 }
 
+export async function getCategories(request, reply) {
+    const categories = await request.server.prisma.category.findMany({
+        orderBy: { name: 'asc' }
+    });
+    reply.send({ categories });
+}
+
 export async function remove(request, reply) {
     await txService.deleteTransaction(request.server.prisma, request.user.id, parseInt(request.params.id));
     reply.send({ message: 'Transacción eliminada' });

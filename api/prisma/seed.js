@@ -9,7 +9,7 @@ async function seed() {
 
     // Clean existing data
     await prisma.transaction.deleteMany();
-    await prisma.budget.deleteMany();
+    await prisma.subscription.deleteMany();
     await prisma.goal.deleteMany();
     await prisma.account.deleteMany();
     await prisma.category.deleteMany();
@@ -160,18 +160,19 @@ async function seed() {
     }
     console.log(`✅ ${goalsData.length} metas creadas`);
 
-    // Budgets (COP)
-    const budgetsData = [
-        { categoryId: categories['Alimentación'].id, amount: 1_200_000 },
-        { categoryId: categories['Transporte'].id, amount: 400_000 },
-        { categoryId: categories['Entretenimiento'].id, amount: 350_000 },
-        { categoryId: categories['Suscripciones'].id, amount: 200_000 },
-        { categoryId: categories['Compras'].id, amount: 500_000 },
+    // Subscriptions (COP)
+    const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 15);
+    const subData = [
+        { name: 'Netflix', amount: 33_900, period: 'monthly', nextBillingDate: new Date(now.getFullYear(), now.getMonth() + 1, 1), color: '#ef4444', icon: 'fa-film' },
+        { name: 'Spotify', amount: 16_900, period: 'monthly', nextBillingDate: new Date(now.getFullYear(), now.getMonth() + 1, 5), color: '#10b981', icon: 'fa-music' },
+        { name: 'Gimnasio Bodytech', amount: 165_000, period: 'monthly', nextBillingDate: new Date(now.getFullYear(), now.getMonth() + 1, 10), color: '#3b82f6', icon: 'fa-dumbbell' },
+        { name: 'Amazon Prime', amount: 14_900, period: 'monthly', nextBillingDate: new Date(now.getFullYear(), now.getMonth() + 1, 22), color: '#f59e0b', icon: 'fa-box' },
+        { name: 'GitHub Copilot', amount: 40_000, period: 'monthly', nextBillingDate: new Date(now.getFullYear(), now.getMonth() + 1, 18), color: '#8b5cf6', icon: 'fa-code' },
     ];
-    for (const b of budgetsData) {
-        await prisma.budget.create({ data: { ...b, userId: user.id, period: 'monthly' } });
+    for (const sub of subData) {
+        await prisma.subscription.create({ data: { ...sub, userId: user.id } });
     }
-    console.log(`✅ ${budgetsData.length} presupuestos creados`);
+    console.log(`✅ ${subData.length} suscripciones creadas`);
 
     console.log('\n✨ Seed completado! (Moneda: COP)\n');
 }

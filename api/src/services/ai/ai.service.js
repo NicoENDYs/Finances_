@@ -1,0 +1,51 @@
+import env from '../../config/env.js';
+import { OpenRouterProvider } from './openrouter.provider.js';
+import { OllamaProvider } from './ollama.provider.js';
+import { getDashboardData, getSpendingByCategory } from '../analytics.service.js';
+
+const providers = {
+    openrouter: () => new OpenRouterProvider(env.OPENROUTER_API_KEY, env.OPENROUTER_MODEL),
+    ollama: () => new OllamaProvider(env.OLLAMA_BASE_URL, env.OLLAMA_MODEL),
+};
+
+function getProvider(providerName = env.AI_PROVIDER) {
+    const factory = providers[providerName];
+    if (!factory) throw new Error(`AI provider "${providerName}" no soportado`);
+    return factory();
+}
+
+function buildSystemPrompt(financialContext) {
+    return `Eres Aurora AI, un asistente financiero personal inteligente y amigable.
+Responde en español, de forma concisa y útil. Usa emojis cuando sea apropiado.
+Cuando menciones montos usa formato $X,XXX.XX.
+
+CONTEXTO FINANCIERO DEL USUARIO:
+${JSON.stringify(financialContext, null, 2)}
+
+Responde preguntas sobre gastos, ingresos, ahorro, inversiones, patrimonio neto y proyecciones basándote en los datos reales del usuario. Si no tienes datos suficientes, indícalo honestamente.`;
+}
+
+export async function chatWithAI(prisma, userId, userMessage) {
+    const provider = getProvider();
+
+    // Build financial context
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const [dashboard, spending] = await Promise.all([
+        getDashboardData(prisma, userId),
+        getSpendingByCategory(prisma, userId, startOfMonth.toISOString(), endOfMonth.toISOString()),
+    ]);
+
+    const financialContext = {
+        ...dashboard,
+        currentSpending: spending,
+        currentDate: now.toISOString().split('T')[0],
+    };
+
+    const systemPrompt = buildSystemPrompt(financialContext);
+    const response = await provider.complete(systemPrompt, userMessage);
+
+    return { response };
+}

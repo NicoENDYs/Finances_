@@ -32,6 +32,20 @@ export const analyticsApi = {
         client.get('/analytics/monthly', { params: { year, month } }),
 };
 
+export const budgetsApi = {
+    list: () => client.get('/budgets'),
+    create: (data: any) => client.post('/budgets', data),
+    update: (id: number, data: any) => client.put(`/budgets/${id}`, data),
+    remove: (id: number) => client.delete(`/budgets/${id}`),
+};
+
+export const goalsApi = {
+    list: () => client.get('/goals'),
+    create: (data: any) => client.post('/goals', data),
+    update: (id: number, data: any) => client.put(`/goals/${id}`, data),
+    remove: (id: number) => client.delete(`/goals/${id}`),
+};
+
 export const aiApi = {
     chat: (message: string) => client.post('/ai/chat', { message }),
 };

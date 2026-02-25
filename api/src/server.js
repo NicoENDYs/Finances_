@@ -10,6 +10,8 @@ import accountsRoutes from './routes/accounts.routes.js';
 import transactionsRoutes from './routes/transactions.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import aiRoutes from './routes/ai.routes.js';
+import budgetRoutes from './routes/budgets.routes.js';
+import goalRoutes from './routes/goals.routes.js';
 
 const fastify = Fastify({
     logger: {
@@ -24,6 +26,7 @@ const fastify = Fastify({
 await fastify.register(cors, {
     origin: ['http://localhost:5173', 'http://localhost:3000'],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
 
 await fastify.register(jwt, { secret: env.JWT_SECRET });
@@ -37,6 +40,8 @@ await fastify.register(accountsRoutes, { prefix: '/api/accounts' });
 await fastify.register(transactionsRoutes, { prefix: '/api/transactions' });
 await fastify.register(analyticsRoutes, { prefix: '/api/analytics' });
 await fastify.register(aiRoutes, { prefix: '/api/ai' });
+await fastify.register(budgetRoutes);
+await fastify.register(goalRoutes);
 
 // Health check
 fastify.get('/api/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));

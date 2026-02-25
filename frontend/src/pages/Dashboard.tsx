@@ -7,7 +7,6 @@ import {
     Chart as ChartJS, CategoryScale, LinearScale, PointElement,
     LineElement, ArcElement, Filler, Tooltip, Legend,
 } from 'chart.js';
-import './Dashboard.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Filler, Tooltip, Legend);
 
@@ -93,7 +92,7 @@ export default function Dashboard() {
                             labels: ['Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb'],
                             datasets: [{
                                 label: 'Patrimonio',
-                                data: [198000, 202400, 208900, 211200, 215800, 219500, 224100, 228700, 231000, 236400, 241200, Number(data.netWorth.netWorth)],
+                                data: [85_000_000, 88_500_000, 91_200_000, 93_800_000, 96_500_000, 99_000_000, 102_000_000, 105_500_000, 108_000_000, 111_500_000, 114_800_000, Number(data.netWorth.netWorth)],
                                 fill: true,
                                 backgroundColor: 'rgba(6,214,160,0.1)',
                                 borderColor: '#06d6a0',
@@ -108,7 +107,7 @@ export default function Dashboard() {
                             plugins: { legend: { display: false } },
                             scales: {
                                 x: { grid: { display: false }, ticks: { color: '#64748b' } },
-                                y: { ticks: { color: '#64748b', callback: (v: any) => '$' + (v / 1000) + 'k' }, grid: { color: 'rgba(255,255,255,.04)' } },
+                                y: { ticks: { color: '#64748b', callback: (v: any) => '$' + (Number(v) / 1_000_000).toFixed(0) + 'M' }, grid: { color: 'rgba(255,255,255,.04)' } },
                             },
                         }}
                     />
